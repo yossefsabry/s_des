@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Compilation step
+gcc -c main.c -o ./dist/main.o
+gcc -c ./helpers/spliting.c -o ./dist/spliting.o
+gcc -c ./helpers/shifting.c -o ./dist/shifting.o
+
+# Linking step
+gcc ./dist/main.o ./dist/spliting.o ./dist/shifting.o -o s_des
+
+# Run the executable (optional)
+./s_des
