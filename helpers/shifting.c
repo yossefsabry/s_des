@@ -17,12 +17,11 @@ sarr shifting(split_array sp_arr, int sf_s) {
         sf_s = (sf_s % left_len + left_len) % left_len; // Ensure positive sf_s value
         char* l_shifted = strdup(sp_arr.left_array);
         if (l_shifted == NULL) {
-            perror("Memory allocation failed for left shift");
+            perror("Memory allocation failed for left shift\n");
             return s_arr;
         }
         for (int i = 0; i < left_len; i++) {
-            l_shifted[i] = sp_arr.left_array[(i - sf_s + left_len) % left_len];
-            // Right circular shift
+            l_shifted[i] = sp_arr.left_array[(i + sf_s + left_len) % left_len];
         }
         s_arr.l_arr = l_shifted;
     } else {
@@ -35,24 +34,28 @@ sarr shifting(split_array sp_arr, int sf_s) {
         sf_s = (sf_s % right_len + right_len) % right_len; // Ensure positive sf_s value
         char* r_shifted = strdup(sp_arr.right_array);
         if (r_shifted == NULL) {
-            perror("Memory allocation failed for right shift");
+            perror("Memory allocation failed for right shift\n");
             free(s_arr.l_arr);
             return s_arr;
         }
         for (int i = 0; i < right_len; i++) {
             r_shifted[i] = sp_arr.right_array[(i + sf_s) % right_len]; 
-            // Left circular shift
         }
         s_arr.r_arr = r_shifted;
+
+        // check s_arr.s_arr
+        s_arr.s_arr = strcat(s_arr.l_arr, s_arr.r_arr);
     } else {
-        free(s_arr.l_arr); // Free previously allocated if no right shift
         s_arr.l_arr = strdup(sp_arr.left_array); // Keep original left
         s_arr.r_arr = strdup(sp_arr.right_array); // No shift needed or error
+        free(s_arr.l_arr); // Free previously allocated if no right shift
     }
+
 
     // for debuger
     // printf("the left side shifting: %s\n", s_arr.l_arr);
     // printf("the right side shifting: %s\n", s_arr.r_arr);
+    // printf("===========\n");
 
     return s_arr;
 }

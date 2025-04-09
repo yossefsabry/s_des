@@ -4,11 +4,11 @@
 gcc -c main.c -o ./dist/main.o
 gcc -c ./helpers/spliting.c -o ./dist/spliting.o
 gcc -c ./helpers/shifting.c -o ./dist/shifting.o
-gcc -c ./des_operation/p10.c -o ./dist/p10.o
+gcc -c ./des_operation/pn.c -o ./dist/pn.o
 
 # Linking step
 gcc ./dist/main.o ./dist/spliting.o ./dist/shifting.o \
-    ./dist/p10.o -o s_des
+    ./dist/pn.o -o s_des
 
 # Run the executable (optional)
 ./s_des
