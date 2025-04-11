@@ -14,7 +14,8 @@ so what is the steps for s-des
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include "des_operation/Sbox_operation.h"
+#include "helpers/swapping_operation.h"
 #include "structs.h"
 #include "helpers/shifting.h"
 #include "helpers/spliting.h"
@@ -111,26 +112,40 @@ int main() {
     printf("the value from xor key one and Ep_r: %s\n", results);
     printf("===========\n");
 
-    /*char results[20] = "name: ";*/
-    /*char *firstName = "yossef";*/
-    /*char *secondName = "foo";*/
-    /*strcat(results, secondName);*/
-    /*printf("%s\n", results);*/
-    /*strcpy(results, firstName);*/
-    /*printf("%s\n", results);*/
+    // making a Sbox operation
+    char* new_value = Sbox_operation(results, s_box1, s_box2);
+    printf("value of sbox: %s\n", new_value);
+    printf("===========\n");
 
-    /*char *name = "yossef";*/
-    /*char *name2 = "yosse";*/
-    /*int value = strcmp(name, name2);*/
-    /*if (value == 0)*/
-    /*    printf("the word is like each other");*/
-    /*else*/
-    /* printf("not like eeach other");*/
+
+    // p4 on sbox
+    int size_of_p4 = sizeof(p4) / sizeof(p4[0]);
+    char *sbox_p4 = pn_operation(new_value, p4, size_of_p4);
+    printf("sbox p4 value : %s\n", sbox_p4);
+    printf("===========\n");
+
+    // making a xor with the sbox_p4, left side split of plain_text
+    char* sbox_larr = xor_operation(sbox_p4, ip_array.left_array);
+    printf("the value from xor sbox p4, left side plain_text: %s\n",
+           sbox_larr);
+    printf("===========\n");
+
+    char* round_one = swapping(sbox_larr, ip_array.right_array);
+    printf("==> the value for round one: %s\n", round_one);
+    printf("===========\n");
+    printf("==== starting round two ====\n");
+
+    /*char username[20] = "yossef";*/
+    /*char *name2 =  "sabry";*/
+    /*strcat(username, name2);*/
+    /*printf("usernmae: %s\n", username);*/
 
     free(p10_value);
     free(results);
     free(Ep_R);
     free(ip);
+    free(new_value);
+    free(sbox_p4);
     free(key_one);
     free(key_two);
 
