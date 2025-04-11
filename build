@@ -5,10 +5,11 @@ gcc -c main.c -o ./dist/main.o
 gcc -c ./helpers/spliting.c -o ./dist/spliting.o
 gcc -c ./helpers/shifting.c -o ./dist/shifting.o
 gcc -c ./des_operation/pn.c -o ./dist/pn.o
+gcc -c ./des_operation/xor_operation.c -o ./dist/xor_operation.o
 
 # Linking step
 gcc ./dist/main.o ./dist/spliting.o ./dist/shifting.o \
-    ./dist/pn.o -o s_des
+    ./dist/pn.o ./dist/xor_operation.o -o s_des  -o s_des
 
 # Run the executable (optional)
 ./s_des

@@ -14,10 +14,13 @@ so what is the steps for s-des
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "structs.h"
 #include "helpers/shifting.h"
 #include "helpers/spliting.h"
 #include "des_operation/pn.h"
+#include "des_operation/xor_operation.h"
+
 
 int main() {
 
@@ -76,13 +79,60 @@ int main() {
     printf("key one: %s\n", key_one);
 
     // starting for key2 now
+    // FIX PROBLEM IN FIX  SHIFTING BY 2
     s_arr = shifting(sp_array, 2);
+    printf("shifited 2 value: %s\n", s_arr.s_arr);
 
-    key_one  = pn_operation(s_arr.s_arr, p8, size_of_p8);
-    printf("key two: %s\n", key_one);
+    key_two  = pn_operation(s_arr.s_arr, p8, size_of_p8);
+    printf("key two: %s\n", key_two);
     printf("===========\n");
 
+    // getting ip from Plain_text
+    int size_ip = sizeof(Ip)/ sizeof(Ip[0]);
+    char* ip = pn_operation(plain_text, Ip, size_ip);
+    printf("ip value : %s\n", ip);
+    printf("===========\n");
+
+    // spliting the ip to right andd left part
+    split_array ip_array = spliting(ip, size_ip);
+    printf("after spliting left: %s\n", ip_array.left_array);
+    printf("after spliting right: %s\n", ip_array.right_array);
+    printf("===========\n");
+
+
+    // applaying EP on R hand side of ip_array
+    int size_of_ep = sizeof(Ep) / sizeof(Ep[0]);
+    char *Ep_R = pn_operation(ip_array.right_array, Ep, size_of_ep);
+    printf("Ep(R) value : %s\n", Ep_R);
+    printf("===========\n");
+
+    // making a xor with the first key and Ep_R
+    char *results = xor_operation(key_one, Ep_R);
+    printf("the value from xor key one and Ep_r: %s\n", results);
+    printf("===========\n");
+
+    /*char results[20] = "name: ";*/
+    /*char *firstName = "yossef";*/
+    /*char *secondName = "foo";*/
+    /*strcat(results, secondName);*/
+    /*printf("%s\n", results);*/
+    /*strcpy(results, firstName);*/
+    /*printf("%s\n", results);*/
+
+    /*char *name = "yossef";*/
+    /*char *name2 = "yosse";*/
+    /*int value = strcmp(name, name2);*/
+    /*if (value == 0)*/
+    /*    printf("the word is like each other");*/
+    /*else*/
+    /* printf("not like eeach other");*/
+
     free(p10_value);
+    free(results);
+    free(Ep_R);
+    free(ip);
+    free(key_one);
+    free(key_two);
 
     return 0;
 }
