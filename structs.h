@@ -14,4 +14,10 @@ typedef struct {
     char* s_arr;
 } sarr;
 
+typedef struct{
+    int x; 
+    int y;
+    int new_values;
+}sbox_values;
+
 #endif // STRUCTS_H

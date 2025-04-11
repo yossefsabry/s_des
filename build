@@ -2,17 +2,18 @@
 
 # Compilation step
 gcc -c main.c -o ./dist/main.o
-gcc -c ./helpers/spliting.c -o ./dist/spliting.o
-gcc -c ./helpers/shifting.c -o ./dist/shifting.o
 gcc -c ./des_operation/pn.c -o ./dist/pn.o
 gcc -c ./des_operation/xor_operation.c -o ./dist/xor_operation.o
 gcc -c ./des_operation/Sbox_operation.c -o ./dist/Sbox_operation.o
+gcc -c ./des_operation/convert_operation.c -o ./dist/convert_operation.o
+gcc -c ./helpers/shifting.c -o ./dist/shifting.o
 gcc -c ./helpers/swapping_operation.c -o ./dist/swapping_operation.o
+gcc -c ./helpers/spliting.c -o ./dist/spliting.o
 
 # Linking step
 gcc ./dist/main.o ./dist/spliting.o ./dist/shifting.o \
     ./dist/pn.o ./dist/xor_operation.o -o s_des ./dist/Sbox_operation.o \
-    ./dist/swapping_operation.o \
+    ./dist/swapping_operation.o ./dist/convert_operation.o \
     -o s_des
 
 # Run the executable (optional)
