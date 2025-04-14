@@ -13,7 +13,7 @@ char* xor_operation(char* key_one, char* key_two) {
     /*    return NULL; // Return NULL to indicate an error*/
     /*}*/
     int nsize = strlen(key_two);
-    char *results = (char*)malloc((nsize - 1) * sizeof(char)); 
+    char *results = (char*)malloc((nsize) * sizeof(char)); 
     results[0] = '\0';
     // Allocate space for nsize characters + null terminator
     if (results == NULL) {
@@ -30,7 +30,8 @@ char* xor_operation(char* key_one, char* key_two) {
 
         if (results_cmp == 0) {
             strcat(results, "0");
-        } else {
+        } 
+        else {
             strcat(results, "1");
         }
     }

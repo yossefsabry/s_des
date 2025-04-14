@@ -32,7 +32,7 @@ char* Sbox_operation(char *value, int sbox_matrix[4][4],
     // printf("the value for first round the decimal value fo : X:%d, Y:%d\n" , v1.x, v1.y);
     // printf("new value one: %d\n", v1.new_values);
     // printf("the value for second round: X:%d, Y:%d\n", v2.x, v2.y);
-    // printf("new value two: %d\n", v2.new_values);
+    // printf("new value  two: %d\n", v2.new_values);
 
 
     return new_binary_value;
