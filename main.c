@@ -138,10 +138,45 @@ int main() {
 
     char* round_one = swapping(sbox_larr, ip_array.right_array);
     printf("- ==> the value for round one: %s <==\n", round_one);
-    printf("- ==== starting round two ====\n");
 
     // free some stuff ;)
     free(sbox_p4);
+
+    // starting round 2
+    printf("\n");
+    printf("- ==== starting round two ====\n");
+    // spliting the ip to right andd left part
+    size_ip = sizeof(round_one) / sizeof(round_one[0]);
+    split_array key_one_split = spliting(round_one, size_ip);
+    printf("- after spliting left: %s\n", key_one_split.left_array);
+    printf("- after spliting right: %s\n", key_one_split.right_array);
+
+    // applaying EP on R hand side of ip_array
+    size_of_ep = sizeof(Ep) / sizeof(Ep[0]);
+    char *Ep_R2 = pn_operation(key_one_split.right_array, Ep, size_of_ep);
+    printf("- Ep(R) value : %s\n", Ep_R);
+
+    // making a xor with the first key and Ep_R
+    results = xor_operation(key_two, Ep_R2);
+    printf("- the value from xor key one and Ep_r: %s\n", results);
+
+    // free some stuff ;)
+    free(Ep_R2);
+
+    // making a Sbox operation
+    new_value = Sbox_operation(results, s_box1, s_box2);
+    printf("- value of sbox: %s\n", new_value);
+
+    // free some stuff ;)
+    free(results);
+
+    // p4 on sbox
+    size_of_p4 = sizeof(p4) / sizeof(p4[0]);
+    sbox_p4 = pn_operation(new_value, p4, size_of_p4);
+    printf("- sbox p4 value : %s\n", sbox_p4);
+
+    // free some stuff
+    free(new_value);
 
     free(round_one);
     free(key_one);
