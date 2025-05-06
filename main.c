@@ -15,6 +15,7 @@ so what is the steps for s-des
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "des_operation/Sbox_operation.h"
 #include "helpers/swapping_operation.h"
 #include "structs.h"
@@ -147,13 +148,13 @@ int main() {
     printf("- ==== starting round two ====\n");
     // spliting the ip to right andd left part
     size_ip = sizeof(round_one) / sizeof(round_one[0]);
-    split_array key_one_split = spliting(round_one, size_ip);
-    printf("- after spliting left: %s\n", key_one_split.left_array);
-    printf("- after spliting right: %s\n", key_one_split.right_array);
+    split_array key_split = spliting(round_one, size_ip);
+    printf("- after spliting left: %s\n", key_split.left_array);
+    printf("- after spliting right: %s\n", key_split.right_array);
 
     // applaying EP on R hand side of ip_array
     size_of_ep = sizeof(Ep) / sizeof(Ep[0]);
-    char *Ep_R2 = pn_operation(key_one_split.right_array, Ep, size_of_ep);
+    char *Ep_R2 = pn_operation(key_split.right_array, Ep, size_of_ep);
     printf("- Ep(R) value : %s\n", Ep_R);
 
     // making a xor with the first key and Ep_R
@@ -178,6 +179,30 @@ int main() {
     // free some stuff
     free(new_value);
 
+
+    // sp4 xor with left side on sbox
+    char* sp4_xor_ls = xor_operation(key_split.left_array, sbox_p4);
+    printf("- sbox p4 and left side xor operation value : %s\n", sp4_xor_ls);
+
+    //  combine spr_xor_ls with right side from key_split
+    char combine_value[8];
+    strcat(combine_value, sp4_xor_ls);
+    strcat(combine_value, key_split.right_array);
+    printf("- combine value from sp4_xor_ls and right side: %s\n", combine_value);
+
+    // ip_inverse on sbox
+    int size_of_ip_1 = sizeof(Ip_1) / sizeof(p4[0]);
+    char* final_value = pn_operation(combine_value, Ip_1, size_of_ip_1);
+    printf("- sbox p4 value : %s\n", final_value);
+
+
+    printf("\n");
+    printf("== finishing incryption process :D ==\n");
+    printf("\n");
+
+
+    free(final_value);
+    free(sp4_xor_ls);
     free(round_one);
     free(key_one);
     free(key_two);
