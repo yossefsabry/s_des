@@ -10,7 +10,7 @@ char* pn_operation(char arr[], int *pn, int s_pn) {
     // printf("size of n: %d, size of s_pn: %d\n", n, s_pn);
 
     // for example p10 => so array with size of 9, and p8 array with size 4...
-    char* results = (char*)malloc(s_pn + 1 * sizeof(char)); // Allocate memory on the heap
+    char* results = (char*)malloc(s_pn + 1 * sizeof(char)); 
 
     results[0] = '\0';
 
@@ -20,10 +20,10 @@ char* pn_operation(char arr[], int *pn, int s_pn) {
     }
 
     for (int i = 0; i < s_pn; i++) {
-        // Adjust the pn value to be a 0-based index
+        // adjust the pn value to be a 0-based index
         int index = pn[i] - 1;
 
-        // Check if the adjusted index is within the bounds of arr
+        // check if the adjusted index is within the bounds of arr
         if (index >= 0 && index < strlen(arr)){
             results[i] = arr[index];
         } else {
@@ -32,7 +32,7 @@ char* pn_operation(char arr[], int *pn, int s_pn) {
             return NULL; // Handle invalid permutation
         }
     }
-    results[s_pn] = '\0';  // null terminate it for safety
+    results[s_pn] = '\0';  // null terminate it for safety and end this
     return results;
 }
 
