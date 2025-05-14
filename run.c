@@ -27,8 +27,9 @@ so what is the steps for s-des
 
 char* run(char *bits) {
     // main encryption text and key
-    char plain_text[8+1] = "00101000";
+    char plain_text[8] = "";
     char main_key[10+1] = "1100011110";
+    strcat(plain_text, bits);
 
     // starting with define the matrix for p10 and p8 and p4
     int p10[10] = {3,5,2,7,4,10,1,9,8,6};

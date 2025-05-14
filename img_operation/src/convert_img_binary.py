@@ -8,7 +8,7 @@ def image_to_c_array(image_path, output_path):
             if i % 12 == 0:
                 out_file.write("    ")
             binary_rep = bin(byte)[2:].zfill(8)
-            out_file.write(f"{binary_rep}, ")
+            out_file.write(f"0b{binary_rep}, ")  # Add 0b prefix
             if (i + 1) % 12 == 0:
                 out_file.write("\n")
         if len(data) % 12 != 0:

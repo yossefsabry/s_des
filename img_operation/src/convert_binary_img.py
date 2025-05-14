@@ -1,38 +1,72 @@
 import os
 import re
 import random
-import zlib
 import struct
+import zlib
+from binascii import hexlify
+
+def analyze_data(byte_data):
+    """Check if data is compressed or encrypted"""
+    # PNG signature check
+    png_sig = b'\x89PNG\r\n\x1a\n'
+    is_png = byte_data.startswith(png_sig)
+    
+    # Zlib compression check (look for zlib header)
+    is_compressed = False
+    if len(byte_data) > 2:
+        zlib_header = byte_data[:2]
+        is_compressed = (zlib_header[0] == 0x78 and 
+                        zlib_header[1] in (0x01, 0x5E, 0x9C, 0xDA))
+
+    return {
+        'is_png': is_png,
+        'is_compressed': is_compressed,
+        'size': len(byte_data),
+        'header': hexlify(byte_data[:8]).decode('utf-8')
+    }
 
 def create_png_from_data(byte_data, output_path):
-    """Create a valid PNG file from raw byte data"""
-    # PNG signature
-    png_header = b'\x89PNG\r\n\x1a\n'
-    
-    # Create IHDR chunk (simplified - you may need to adjust width/height)
-    width = 100  # Default width - adjust as needed
-    height = 100  # Default height - adjust as needed
-    ihdr = struct.pack('>I', width) + struct.pack('>I', height) + b'\x08\x02\x00\x00\x00'
-    ihdr_chunk = b'IHDR' + ihdr
-    ihdr_crc = struct.pack('>I', zlib.crc32(ihdr_chunk) & 0xffffffff)
-    ihdr_chunk = struct.pack('>I', len(ihdr)) + ihdr_chunk + ihdr_crc
-    
-    # Create IDAT chunk with your data
-    idat_data = byte_data
-    # Compress the data (required for PNG)
-    compressed_data = zlib.compress(idat_data)
-    idat_chunk = b'IDAT' + compressed_data
-    idat_crc = struct.pack('>I', zlib.crc32(idat_chunk) & 0xffffffff)
-    idat_chunk = struct.pack('>I', len(compressed_data)) + idat_chunk + idat_crc
-    
-    # IEND chunk (PNG end marker)
-    iend_chunk = b'\x00\x00\x00\x00IEND\xae\x42\x60\x82'
-    
-    # Combine all parts
-    png_data = png_header + ihdr_chunk + idat_chunk + iend_chunk
-    
+    """Create PNG with proper structure"""
     with open(output_path, 'wb') as f:
-        f.write(png_data)
+        # PNG signature
+        f.write(b'\x89PNG\r\n\x1a\n')
+        
+        # IHDR chunk
+        width, height = 100, 100  # Default dimensions
+        ihdr = struct.pack('>IIBBBBB', width, height, 8, 2, 0, 0, 0)
+        f.write(struct.pack('>I', 13))
+        f.write(b'IHDR')
+        f.write(ihdr)
+        f.write(struct.pack('>I', zlib.crc32(b'IHDR' + ihdr) & 0xffffffff))
+        
+        # IDAT chunk (with compression)
+        compressed = zlib.compress(byte_data)
+        f.write(struct.pack('>I', len(compressed)))
+        f.write(b'IDAT')
+        f.write(compressed)
+        f.write(struct.pack('>I', zlib.crc32(b'IDAT' + compressed) & 0xffffffff))
+        
+        # IEND chunk
+        f.write(b'\x00\x00\x00\x00IEND\xae\x42\x60\x82')
+
+def process_image_data(byte_data):
+    """Handle different data types"""
+    analysis = analyze_data(byte_data)
+    print(f"Data Analysis:\n"
+          f"- Size: {analysis['size']} bytes\n"
+          f"- Header: {analysis['header']}\n"
+          f"- Is PNG: {'Yes' if analysis['is_png'] else 'No'}\n"
+          f"- Is Compressed: {'Yes' if analysis['is_compressed'] else 'No'}")
+
+    if analysis['is_compressed']:
+        try:
+            decompressed = zlib.decompress(byte_data)
+            print(f"Decompressed {len(byte_data)} → {len(decompressed)} bytes")
+            return decompressed
+        except zlib.error:
+            print("Decompression failed - using raw data")
+            return byte_data
+    return byte_data
 
 def c_array_to_image(c_array_file, output_folder):
     os.makedirs(output_folder, exist_ok=True)
@@ -41,27 +75,18 @@ def c_array_to_image(c_array_file, output_folder):
         content = file.read()
     
     binaries = re.findall(r'0b([01]{8})', content)
+    if not binaries:
+        print("Error: No binary data found")
+        return
+    
     byte_data = bytes(int(b, 2) for b in binaries)
+    processed_data = process_image_data(byte_data)
     
-    # Debug output
-    print(f"Total bytes: {len(byte_data)}")
-    print(f"First 16 bytes: {byte_data[:16].hex(' ')}")
-    if len(byte_data) > 16:
-        print(f"Last 16 bytes: {byte_data[-16:].hex(' ')}")
+    output_path = os.path.join(output_folder, f"image_{random.randint(1000,9999)}.png")
+    create_png_from_data(processed_data, output_path)
     
-    rand_num = random.randint(1000, 9999)
-    output_path = os.path.join(output_folder, f"img_{rand_num}.png")
-    
-    if byte_data.startswith(b'\x89PNG'):
-        print("Data already has PNG header")
-        with open(output_path, 'wb') as img_file:
-            img_file.write(byte_data)
-    else:
-        print("Creating new PNG structure from data")
-        create_png_from_data(byte_data, output_path)
-    
-    print(f"Image written to {output_path}")
-    print(f"File size: {os.path.getsize(output_path)} bytes")
+    print(f"\nFinal image saved to {output_path}")
+    print(f"Final size: {os.path.getsize(output_path)} bytes")
 
 if __name__ == "__main__":
     c_array_to_image("./img_encryption.txt", "./outputs/")

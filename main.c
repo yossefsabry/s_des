@@ -21,7 +21,8 @@ so what is the steps for s-des
 int main() {
 
 
-    read_and_print_bits("./img_operation/src/img.txt", "./img_operation/src/img_encryption.txt");
+    encrypt_bits_and_save("./img_operation/src/img.txt", 
+                          "./img_operation/src/img_encryption.txt");
 
     char* value = run("00000000");
     printf("the encrypted value: %s\n", value);
