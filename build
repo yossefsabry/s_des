@@ -14,10 +14,10 @@ gcc -c ./run.c -o ./dist/run.o
 
 # Linking step
 gcc ./dist/main.o ./dist/spliting.o ./dist/shifting.o \
-    ./dist/pn.o ./dist/xor_operation.o -o s_des ./dist/Sbox_operation.o \
+    ./dist/pn.o ./dist/xor_operation.o ./dist/Sbox_operation.o \
     ./dist/swapping_operation.o ./dist/convert_operation.o \
     ./dist/run.o ./dist/handle_bits.o \
-    -o s_des
+    -o s_des -lz
 
 # Run the executable (optional)
 ./s_des

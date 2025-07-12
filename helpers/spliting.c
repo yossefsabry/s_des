@@ -16,24 +16,24 @@ split_array spliting(const char array[], int len) {
 
     // starting with left hand side of array
     int left_len = len / 2;
-    char* l_arr = (char*)malloc(left_len); // Allocate memory for left part
-    l_arr[0] = '\0';
+    char* l_arr = (char*)malloc(left_len + 1); // Allocate memory for left part + null terminator
     if (l_arr == NULL) { // if error happend in malloc
         perror("Memory allocation failed");
         return sp_arr;
     }
     memcpy(l_arr, array, left_len); // copy a array to left
+    l_arr[left_len] = '\0';  // Properly null terminate
 
     // started with the right hand side
     int right_len = len - left_len;
-    char* r_arr = (char*)malloc(right_len); // Allocate memory for right part
-    r_arr[left_len] = '\0';
+    char* r_arr = (char*)malloc(right_len + 1); // Allocate memory for right part + null terminator
     if (r_arr == NULL) {
         perror("Memory allocation failed");
         free(l_arr);
         return sp_arr;
     }
     memcpy(r_arr, array + left_len, right_len);
+    r_arr[right_len] = '\0';  // Properly null terminate
 
     // for dobuger
     // printf("the array left value: %s\n", l_arr);
